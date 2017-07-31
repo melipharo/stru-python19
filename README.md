@@ -1,1 +1,2 @@
-# stru-python19
+
+Repo for training with help of stru.
