@@ -31,7 +31,7 @@ class Application:
         wd.find_element_by_xpath("//div[@id='content']/form/input[21]").click()
         wd.find_element_by_xpath("//div/div[4]/div/i/a[2]").click()
 
-    def create_group(self, group):
+    def add_group(self, group):
         wd = self.wd
         wd.find_element_by_link_text("groups").click()
         # click 'new group'
