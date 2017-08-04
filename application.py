@@ -1,52 +1,11 @@
-# -*- coding: utf-8 -*-
 from selenium.webdriver.firefox.webdriver import WebDriver
-import unittest
-from group import Group
-from contact import Contact
 
-def is_alert_present(wd):
-    try:
-        wd.switch_to_alert().text
-        return True
-    except:
-        return False
-
-class tests(unittest.TestCase):
-    def setUp(self):
+class Application:
+    def __init__(self):
         self.wd = WebDriver(
             firefox_binary="C:\\Program Files\\Mozilla Firefox\\firefox.exe"
         )
         self.wd.implicitly_wait(60)
-    
-    def test_add_group(self):
-        self.open_addressbook()
-        self.login(username="admin", password="secret")
-        self.open_groups()
-        self.create_group(Group(name="autotest group", header="test", footer="toor"))
-        self.return_to_group_page()
-        self.logout()
-
-    def test_add_empty_group(self):
-        self.open_addressbook()
-        self.login(username="admin", password="secret")
-        self.open_groups()
-        self.create_group(Group(name="", header="", footer=""))
-        self.return_to_group_page()
-        self.logout()
-
-    def test_add_contact(self):
-        self.open_addressbook()
-        self.login(username="admin", password="secret")
-        self.add_contact(Contact("John", "Doe", "test Co", "322223", "test note"))
-        self.return_to_contacts_page()
-        self.logout()
-
-    def test_add_empty_contact(self):
-        self.open_addressbook()
-        self.login(username="admin", password="secret")
-        self.add_contact(Contact("", "", "", "", ""))
-        self.return_to_contacts_page()
-        self.logout()
 
     def add_contact(self, contact):
         wd = self.wd
@@ -70,15 +29,11 @@ class tests(unittest.TestCase):
         wd.find_element_by_name("notes").send_keys(contact.note)
         # click 'enter'
         wd.find_element_by_xpath("//div[@id='content']/form/input[21]").click()
-
-    def return_to_group_page(self):
-        self.wd.find_element_by_link_text("group page").click()
-
-    def return_to_contacts_page(self):
-        self.wd.find_element_by_xpath("//div/div[4]/div/i/a[2]").click()
+        wd.find_element_by_xpath("//div/div[4]/div/i/a[2]").click()
 
     def create_group(self, group):
         wd = self.wd
+        wd.find_element_by_link_text("groups").click()
         # click 'new group'
         wd.find_element_by_name("new").click()
         # enter group data
@@ -94,12 +49,11 @@ class tests(unittest.TestCase):
         wd.find_element_by_name("group_footer").send_keys(group.footer)
         # click 'submit'
         wd.find_element_by_name("submit").click()
-
-    def open_groups(self):
-        self.wd.find_element_by_link_text("groups").click()
+        wd.find_element_by_link_text("group page").click()
 
     def login(self, username, password):
         wd = self.wd
+        self.open_addressbook()
         wd.find_element_by_id("LoginForm").click()
         wd.find_element_by_name("user").click()
         wd.find_element_by_name("user").clear()
@@ -115,8 +69,5 @@ class tests(unittest.TestCase):
     def open_addressbook(self):
         self.wd.get("http://localhost/addressbook/")
 
-    def tearDown(self):
+    def destroy(self):
         self.wd.quit()
-
-if __name__ == '__main__':
-    unittest.main()
