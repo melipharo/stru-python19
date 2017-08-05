@@ -1,5 +1,7 @@
 from selenium.webdriver.firefox.webdriver import WebDriver
 from fixture.session import SessionHelper
+from fixture.group import GroupHelper
+from fixture.contact import ContactHelper
 
 class Application:
     def __init__(self):
@@ -8,50 +10,8 @@ class Application:
         )
         self.wd.implicitly_wait(60)
         self.session = SessionHelper(self)
-
-    def add_contact(self, contact):
-        wd = self.wd
-        # click 'add new'
-        wd.find_element_by_link_text("add new").click()
-        # fill contact data
-        wd.find_element_by_name("firstname").click()
-        wd.find_element_by_name("firstname").clear()
-        wd.find_element_by_name("firstname").send_keys(contact.firstname)
-        wd.find_element_by_name("lastname").click()
-        wd.find_element_by_name("lastname").clear()
-        wd.find_element_by_name("lastname").send_keys(contact.lastname)
-        wd.find_element_by_name("company").click()
-        wd.find_element_by_name("company").clear()
-        wd.find_element_by_name("company").send_keys(contact.company)
-        wd.find_element_by_name("home").click()
-        wd.find_element_by_name("home").clear()
-        wd.find_element_by_name("home").send_keys(contact.home_tel)
-        wd.find_element_by_name("notes").click()
-        wd.find_element_by_name("notes").clear()
-        wd.find_element_by_name("notes").send_keys(contact.note)
-        # click 'enter'
-        wd.find_element_by_xpath("//div[@id='content']/form/input[21]").click()
-        wd.find_element_by_xpath("//div/div[4]/div/i/a[2]").click()
-
-    def add_group(self, group):
-        wd = self.wd
-        wd.find_element_by_link_text("groups").click()
-        # click 'new group'
-        wd.find_element_by_name("new").click()
-        # enter group data
-        wd.find_element_by_name("group_header").click()
-        wd.find_element_by_name("group_name").click()
-        wd.find_element_by_name("group_name").clear()
-        wd.find_element_by_name("group_name").send_keys(group.name)
-        wd.find_element_by_name("group_header").click()
-        wd.find_element_by_name("group_header").clear()
-        wd.find_element_by_name("group_header").send_keys(group.header)
-        wd.find_element_by_name("group_footer").click()
-        wd.find_element_by_name("group_footer").clear()
-        wd.find_element_by_name("group_footer").send_keys(group.footer)
-        # click 'submit'
-        wd.find_element_by_name("submit").click()
-        wd.find_element_by_link_text("group page").click()
+        self.group = GroupHelper(self)
+        self.contact = ContactHelper(self)
 
     def open_addressbook(self):
         self.wd.get("http://localhost/addressbook/")
