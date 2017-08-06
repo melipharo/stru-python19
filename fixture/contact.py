@@ -6,7 +6,13 @@ class ContactHelper:
         wd = self.app.wd
         # click 'add new'
         wd.find_element_by_link_text("add new").click()
-        # fill contact data
+        self.set_contact_data(contact)
+        # click 'enter'
+        wd.find_element_by_name("submit").click()
+        self.return_to_home_page()
+
+    def set_contact_data(self, contact):
+        wd = self.app.wd
         wd.find_element_by_name("firstname").click()
         wd.find_element_by_name("firstname").clear()
         wd.find_element_by_name("firstname").send_keys(contact.firstname)
@@ -22,6 +28,26 @@ class ContactHelper:
         wd.find_element_by_name("notes").click()
         wd.find_element_by_name("notes").clear()
         wd.find_element_by_name("notes").send_keys(contact.note)
-        # click 'enter'
-        wd.find_element_by_xpath("//div[@id='content']/form/input[21]").click()
-        wd.find_element_by_xpath("//div/div[4]/div/i/a[2]").click()
+
+    def delete_first(self):
+        wd = self.app.wd
+        # select first contact
+        wd.find_element_by_name("selected[]").click()
+        # click 'delete'
+        wd.find_element_by_xpath("//div[@id='content']/form/div[@class='left']/input[@value='Delete']").click()
+        # accept deletion
+        wd.switch_to_alert().accept()
+        # do not wait and return to home page
+        wd.find_element_by_link_text("home").click()
+
+    def edit_first(self, contact):
+        wd = self.app.wd
+        # click 'edit' on first contact
+        wd.find_element_by_xpath("//table[@id='maintable']/tbody/tr[2]/td[8]/a").click()
+        self.set_contact_data(contact)
+        # click 'update'
+        wd.find_element_by_name("update").click()
+        self.return_to_home_page()
+
+    def return_to_home_page(self):
+        self.app.wd.find_element_by_link_text("home page").click()
