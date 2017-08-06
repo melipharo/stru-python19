@@ -1,3 +1,8 @@
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import StaleElementReferenceException
+
 class ContactHelper:
     def __init__(self, app):
         self.app = app
@@ -37,8 +42,14 @@ class ContactHelper:
         wd.find_element_by_xpath("//div[@id='content']/form/div[@class='left']/input[@value='Delete']").click()
         # accept deletion
         wd.switch_to_alert().accept()
-        # do not wait and return to home page
-        wd.find_element_by_link_text("home").click()
+        # return to home page
+        # there is autorefresh on page so wait until href is located
+        wait = WebDriverWait(wd, 10)
+        try:
+            wait.until(EC.presence_of_element_located((By.LINK_TEXT, 'home'))).click()
+        except StaleElementReferenceException:
+            # try to click again
+            wd.find_element_by_link_text("home").click()
 
     def edit_first(self, contact):
         wd = self.app.wd
