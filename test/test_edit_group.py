@@ -1,10 +1,21 @@
 from model import Group
 
-def test_delete_first_group(app):
-    app.session.login(username="admin", password="secret")
+
+def test_edit_first_group(app):
     app.group.edit_first(Group(
         name="changed name",
-        footer="changed footer",
-        header="changed header"
+        header="changed header",
+        footer="changed footer"
     ))
-    app.session.logout()
+
+
+def test_edit_group_name(app):
+    app.group.edit_first(Group(
+        name="changed single name"
+    ))
+
+
+def test_edit_group_header(app):
+    app.group.edit_first(Group(
+        header="changed single header"
+    ))

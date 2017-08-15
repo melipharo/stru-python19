@@ -18,24 +18,22 @@ class ContactHelper:
 
     def set_contact_data(self, contact):
         wd = self.app.wd
-        wd.find_element_by_name("firstname").click()
-        wd.find_element_by_name("firstname").clear()
-        wd.find_element_by_name("firstname").send_keys(contact.firstname)
-        wd.find_element_by_name("lastname").click()
-        wd.find_element_by_name("lastname").clear()
-        wd.find_element_by_name("lastname").send_keys(contact.lastname)
-        wd.find_element_by_name("company").click()
-        wd.find_element_by_name("company").clear()
-        wd.find_element_by_name("company").send_keys(contact.company)
-        wd.find_element_by_name("home").click()
-        wd.find_element_by_name("home").clear()
-        wd.find_element_by_name("home").send_keys(contact.home_tel)
-        wd.find_element_by_name("notes").click()
-        wd.find_element_by_name("notes").clear()
-        wd.find_element_by_name("notes").send_keys(contact.note)
+        self.change_field("firstname", contact.firstname)
+        self.change_field("lastname", contact.lastname)
+        self.change_field("company", contact.company)
+        self.change_field("home", contact.home_tel)
+        self.change_field("notes", contact.note)
+
+    def change_field(self, field, text):
+        wd = self.app.wd
+        if text is not None:
+            wd.find_element_by_name(field).click()
+            wd.find_element_by_name(field).clear()
+            wd.find_element_by_name(field).send_keys(text)
 
     def delete_first(self):
         wd = self.app.wd
+        self.open_contacts_page()
         # select first contact
         wd.find_element_by_name("selected[]").click()
         # click 'delete'
@@ -44,15 +42,18 @@ class ContactHelper:
         wd.switch_to_alert().accept()
         # return to home page
         # there is autorefresh on page so wait until href is located
+        # and try to open contact page
         wait = WebDriverWait(wd, 10)
         try:
             wait.until(EC.presence_of_element_located((By.LINK_TEXT, 'home'))).click()
         except StaleElementReferenceException:
-            # try to click again
-            wd.find_element_by_link_text("home").click()
+            self.open_contacts_page()
+        finally:
+            self.open_contacts_page()
 
     def edit_first(self, contact):
         wd = self.app.wd
+        self.open_contacts_page()
         # click 'edit' on first contact
         wd.find_element_by_xpath("//table[@id='maintable']/tbody/tr[2]/td[8]/a").click()
         self.set_contact_data(contact)
@@ -62,3 +63,6 @@ class ContactHelper:
 
     def return_to_home_page(self):
         self.app.wd.find_element_by_link_text("home page").click()
+
+    def open_contacts_page(self):
+        self.app.wd.find_element_by_link_text("home").click()

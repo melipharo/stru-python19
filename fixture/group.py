@@ -18,8 +18,7 @@ class GroupHelper:
     def edit_first(self, group):
         wd = self.app.wd
         self.open_groups_page()
-        # select first group
-        wd.find_element_by_name("selected[]").click()
+        self.select_first_group()
         # click 'edit'
         wd.find_element_by_name("edit").click()
         self.set_group_data(group)
@@ -29,25 +28,27 @@ class GroupHelper:
 
     def set_group_data(self, group):
         wd = self.app.wd
-        wd.find_element_by_name("group_header").click()
-        wd.find_element_by_name("group_name").click()
-        wd.find_element_by_name("group_name").clear()
-        wd.find_element_by_name("group_name").send_keys(group.name)
-        wd.find_element_by_name("group_header").click()
-        wd.find_element_by_name("group_header").clear()
-        wd.find_element_by_name("group_header").send_keys(group.header)
-        wd.find_element_by_name("group_footer").click()
-        wd.find_element_by_name("group_footer").clear()
-        wd.find_element_by_name("group_footer").send_keys(group.footer)
+        self.change_field("group_name", group.name)
+        self.change_field("group_header", group.header)
+        self.change_field("group_footer", group.footer)
+
+    def change_field(self, field, text):
+        wd = self.app.wd
+        if text is not None:
+            wd.find_element_by_name(field).click()
+            wd.find_element_by_name(field).clear()
+            wd.find_element_by_name(field).send_keys(text)
 
     def delete_first(self):
         wd = self.app.wd
         self.open_groups_page()
-        # select first group
-        wd.find_element_by_name("selected[]").click()
+        self.select_first_group()
         # click 'delete'
         wd.find_element_by_name("delete").click()
         self.return_to_groups_page()
+
+    def select_first_group(self):
+        self.app.wd.find_element_by_name("selected[]").click()
 
     def return_to_groups_page(self):
         self.app.wd.find_element_by_link_text("group page").click()
