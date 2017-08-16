@@ -8,7 +8,7 @@ class Application:
         self.wd = WebDriver(
             firefox_binary="C:\\Program Files\\Mozilla Firefox\\firefox.exe"
         )
-        self.wd.implicitly_wait(60)
+        self.wd.implicitly_wait(5)
         self.session = SessionHelper(self)
         self.group = GroupHelper(self)
         self.contact = ContactHelper(self)

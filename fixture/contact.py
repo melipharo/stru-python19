@@ -66,3 +66,7 @@ class ContactHelper:
 
     def open_contacts_page(self):
         self.app.wd.find_element_by_link_text("home").click()
+
+    def count(self):
+        self.open_contacts_page()
+        return len(self.app.wd.find_elements_by_xpath("//table[@id='maintable']/tbody/tr")) - 1
