@@ -10,6 +10,7 @@ class ContactHelper:
     def create(self, contact):
         wd = self.app.wd
         # click 'add new'
+        self.open_contacts_page()
         wd.find_element_by_link_text("add new").click()
         self.set_contact_data(contact)
         # click 'enter'
@@ -43,6 +44,7 @@ class ContactHelper:
         # return to home page
         # there is autorefresh on page so wait until href is located
         # and try to open contact page
+        # hint: self.wd.implicitly_wait(5)
         wait = WebDriverWait(wd, 10)
         try:
             wait.until(EC.presence_of_element_located((By.LINK_TEXT, 'home'))).click()
@@ -65,7 +67,11 @@ class ContactHelper:
         self.app.wd.find_element_by_link_text("home page").click()
 
     def open_contacts_page(self):
-        self.app.wd.find_element_by_link_text("home").click()
+        wd = self.app.wd
+        on_root_page = wd.current_url.endswith("/addressbook/") or wd.current_url.endswith("/index.php")
+        maintable_exists = len(wd.find_elements_by_xpath("//table[@id='maintable']/tbody/tr")) > 0
+        if not (on_root_page and maintable_exists):
+            wd.find_element_by_link_text("home").click()
 
     def count(self):
         self.open_contacts_page()
