@@ -2,6 +2,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import StaleElementReferenceException
+from model import Contact
 
 class ContactHelper:
     def __init__(self, app):
@@ -76,3 +77,17 @@ class ContactHelper:
     def count(self):
         self.open_contacts_page()
         return len(self.app.wd.find_elements_by_xpath("//table[@id='maintable']/tbody/tr")) - 1
+
+    def get_contact_list(self):
+        wd = self.app.wd
+        self.open_contacts_page()
+        contacts = []
+        for element in wd.find_elements_by_xpath("//table[@id='maintable']/tbody/tr")[1:]:
+            contacts.append(
+                Contact(
+                    id=element.find_element_by_name("selected[]").get_attribute("value"),
+                    firstname=element.find_elements_by_xpath("td")[2].text,
+                    lastname=element.find_elements_by_xpath("td")[1].text
+                )
+            )
+        return contacts
