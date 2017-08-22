@@ -12,8 +12,8 @@ def test_edit_first_group(app):
         id = old_groups[0].id
     )
     app.group.edit_first(group)
+    assert len(old_groups) == app.group.count()
     new_groups = app.group.get_group_list()
-    assert len(old_groups) == len(new_groups)
     old_groups[0] = group
     assert sorted(old_groups) == sorted(new_groups)
 

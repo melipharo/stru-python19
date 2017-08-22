@@ -14,8 +14,8 @@ def test_edit_first_contact(app):
         note="test note"
     )
     app.contact.edit_first(contact)
+    assert len(old_contacts) == app.contact.count()
     new_contacts = app.contact.get_contact_list()
-    assert len(old_contacts) == len(new_contacts)
     old_contacts[0] = contact
     assert sorted(old_contacts) == sorted(new_contacts)
 

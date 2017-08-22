@@ -7,6 +7,7 @@ from model import Contact
 class ContactHelper:
     def __init__(self, app):
         self.app = app
+        self.contact_cache = None
 
     def create(self, contact):
         wd = self.app.wd
@@ -17,6 +18,7 @@ class ContactHelper:
         # click 'enter'
         wd.find_element_by_name("submit").click()
         self.return_to_home_page()
+        self.contact_cache = None
 
     def set_contact_data(self, contact):
         wd = self.app.wd
@@ -53,6 +55,7 @@ class ContactHelper:
             self.open_contacts_page()
         finally:
             self.open_contacts_page()
+        self.contact_cache = None
 
     def edit_first(self, contact):
         wd = self.app.wd
@@ -63,6 +66,7 @@ class ContactHelper:
         # click 'update'
         wd.find_element_by_name("update").click()
         self.return_to_home_page()
+        self.contact_cache = None
 
     def return_to_home_page(self):
         self.app.wd.find_element_by_link_text("home page").click()
@@ -79,15 +83,16 @@ class ContactHelper:
         return len(self.app.wd.find_elements_by_xpath("//table[@id='maintable']/tbody/tr")) - 1
 
     def get_contact_list(self):
-        wd = self.app.wd
-        self.open_contacts_page()
-        contacts = []
-        for element in wd.find_elements_by_xpath("//table[@id='maintable']/tbody/tr")[1:]:
-            contacts.append(
-                Contact(
-                    id=element.find_element_by_name("selected[]").get_attribute("value"),
-                    firstname=element.find_elements_by_xpath("td")[2].text,
-                    lastname=element.find_elements_by_xpath("td")[1].text
+        if self.contact_cache is None:
+            wd = self.app.wd
+            self.open_contacts_page()
+            self.contact_cache = []
+            for element in wd.find_elements_by_xpath("//table[@id='maintable']/tbody/tr")[1:]:
+                self.contact_cache.append(
+                    Contact(
+                        id=element.find_element_by_name("selected[]").get_attribute("value"),
+                        firstname=element.find_elements_by_xpath("td")[2].text,
+                        lastname=element.find_elements_by_xpath("td")[1].text
+                    )
                 )
-            )
-        return contacts
+        return self.contact_cache
