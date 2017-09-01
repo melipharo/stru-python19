@@ -2,7 +2,7 @@ from model import Contact
 from random import randrange
 
 
-def test_fields_on_home_page(app):
+def test_check_fields_on_home_page(app):
     if app.contact.count() == 0:
         app.contact.create(Contact(
             firstname="test",
