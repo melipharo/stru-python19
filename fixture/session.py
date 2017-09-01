@@ -23,8 +23,10 @@ class SessionHelper:
         self.login(username, password)
 
     def is_logged_in_as(self, username):
-        wd = self.app.wd
-        return wd.find_element_by_xpath("//div/div[1]/form/b").text == "({})".format(username)
+        return self.get_logged_user() == username
+
+    def get_logged_user(self):
+        return self.app.wd.find_element_by_xpath("//div/div[1]/form/b").text[1:-1]
 
     def logout(self):
         self.app.wd.find_element_by_link_text("Logout").click()

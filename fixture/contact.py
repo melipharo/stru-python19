@@ -1,8 +1,10 @@
+import re
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import StaleElementReferenceException
 from model import Contact
+
 
 class ContactHelper:
     def __init__(self, app):
@@ -65,9 +67,7 @@ class ContactHelper:
 
     def edit_contact_by_index(self, index, contact):
         wd = self.app.wd
-        self.open_contacts_page()
-        # click 'edit' on first contact
-        wd.find_element_by_xpath("//table[@id='maintable']/tbody/tr[{}]/td[8]/a".format(index+2)).click()
+        self.open_contact_to_edit_by_index(index)
         self.set_contact_data(contact)
         # click 'update'
         wd.find_element_by_name("update").click()
@@ -94,11 +94,60 @@ class ContactHelper:
             self.open_contacts_page()
             self.contact_cache = []
             for element in wd.find_elements_by_xpath("//table[@id='maintable']/tbody/tr")[1:]:
+                cells = element.find_elements_by_xpath("td")
+                try:
+                    homepage=cells[9].find_element_by_xpath("a/img").get_attribute("alt")
+                except Exception:
+                    homepage=""
+
                 self.contact_cache.append(
                     Contact(
                         id=element.find_element_by_name("selected[]").get_attribute("value"),
-                        firstname=element.find_elements_by_xpath("td")[2].text,
-                        lastname=element.find_elements_by_xpath("td")[1].text
+                        firstname=cells[2].text,
+                        lastname=cells[1].text,
+                        address=cells[3].text,
+                        homepage=homepage,
+                        all_emails_from_homepage=cells[4].text,
+                        all_phones_from_homepage=cells[5].text,
                     )
                 )
         return self.contact_cache
+
+    def open_contact_to_edit_by_index(self, index):
+        self.open_contacts_page()
+        self.app.wd.find_element_by_xpath("//table[@id='maintable']/tbody/tr[{}]/td[8]/a".format(index + 2)).click()
+
+    def get_contact_info_from_edit_page(self, index):
+        wd = self.app.wd
+        self.open_contact_to_edit_by_index(index)
+
+        return Contact(
+            id=wd.find_element_by_name("id").get_attribute("value"),
+            firstname=wd.find_element_by_name("firstname").get_attribute("value"),
+            lastname=wd.find_element_by_name("lastname").get_attribute("value"),
+            company=wd.find_element_by_name("company").get_attribute("value"),
+            home_tel=wd.find_element_by_name("home").get_attribute("value"),
+            mobile_tel=wd.find_element_by_name("mobile").get_attribute("value"),
+            work_tel=wd.find_element_by_name("work").get_attribute("value"),
+            sec_tel=wd.find_element_by_name("phone2").get_attribute("value"),
+            note=wd.find_element_by_name("notes").get_attribute("value"),
+            email=wd.find_element_by_name("email").get_attribute("value"),
+            email2=wd.find_element_by_name("email2").get_attribute("value"),
+            email3=wd.find_element_by_name("email3").get_attribute("value"),
+            address=wd.find_element_by_name("address").get_attribute("value"),
+            homepage=wd.find_element_by_name("homepage").get_attribute("value"),
+        )
+
+    def open_contact_view_page_by_index(self, index):
+        self.open_contacts_page()
+        self.app.wd.find_element_by_xpath("//table[@id='maintable']/tbody/tr[{}]/td[7]/a".format(index + 2)).click()
+
+    def get_contact_from_view_page(self, index):
+        wd = self.app.wd
+        self.open_contact_view_page_by_index(index)
+        content = wd.find_element_by_id("content").text
+        return Contact(
+            home_tel=re.search("H: (.*)", content).group(1),
+            mobile_tel=re.search("M: (.*)", content).group(1),
+            work_tel=re.search("W: (.*)", content).group(1)
+        )
