@@ -13,21 +13,31 @@ class ContactHelper:
 
     def create(self, contact):
         wd = self.app.wd
-        # click 'add new'
         self.open_contacts_page()
+        # click 'add new'
         wd.find_element_by_link_text("add new").click()
         self.set_contact_data(contact)
-        # click 'enter'
+        # click 'submit'
         wd.find_element_by_name("submit").click()
         self.return_to_home_page()
         self.contact_cache = None
 
     def set_contact_data(self, contact):
-        wd = self.app.wd
         self.change_field("firstname", contact.firstname)
         self.change_field("lastname", contact.lastname)
         self.change_field("company", contact.company)
+
         self.change_field("home", contact.home_tel)
+        self.change_field("mobile", contact.mobile_tel)
+        self.change_field("work", contact.work_tel)
+        self.change_field("phone2", contact.sec_tel)
+
+        self.change_field("email", contact.email)
+        self.change_field("email2", contact.email2)
+        self.change_field("email3", contact.email3)
+
+        self.change_field("address", contact.address)
+        self.change_field("homepage", contact.homepage)
         self.change_field("notes", contact.note)
 
     def change_field(self, field, text):

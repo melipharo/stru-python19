@@ -1,18 +1,10 @@
-from model import Contact
 from random import randrange
+from model import ContactGenerator
 
 
 def test_check_fields_on_home_page(app):
     if app.contact.count() == 0:
-        app.contact.create(Contact(
-            firstname="test",
-            lastname="lastname",
-            address="addr",
-            email="t@st",
-            email3="t@st3",
-            home_tel="123",
-            work_tel="321",
-        ))
+        app.contact.create(ContactGenerator().get_contact())
     index = randrange(len(app.contact.get_contact_list()))
     contact_from_home_page = app.contact.get_contact_list()[index]
     contact_from_edit_page = app.contact.get_contact_info_from_edit_page(index)
