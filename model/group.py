@@ -1,5 +1,5 @@
 from sys import maxsize
-from model.utils import random_string, trim_spaces
+from model.utils import trim_spaces
 
 
 class Group:
@@ -30,33 +30,3 @@ class Group:
 
     def __lt__(self, other):
         return self.id_or_max() < other.id_or_max()
-
-
-class GroupGenerator:
-    def __init__(self, name_max_len=10, data_max_len=20):
-        self.name_max_len = name_max_len
-        self.data_max_len = data_max_len
-
-    def get_groups_count(self, count):
-        return [
-            Group(
-                name=random_string("name", self.name_max_len),
-                header=random_string("header", self.data_max_len),
-                footer=random_string("footer", self.data_max_len)
-            ) for _ in range(count)
-        ]
-
-    def get_group(self):
-        return self.get_groups_count(1)[0]
-
-    def get_test_selection(self):
-        return [
-            Group(
-                name=name,
-                header=header,
-                footer=footer
-            )
-            for name in ["",random_string("name", self.name_max_len)]
-            for header in ["", random_string("header", self.data_max_len)]
-            for footer in ["", random_string("footer", self.data_max_len)]
-        ]

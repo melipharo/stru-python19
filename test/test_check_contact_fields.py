@@ -1,5 +1,5 @@
 from random import randrange
-from model import ContactGenerator
+from generator import ContactGenerator
 
 
 def test_check_fields_on_home_page(app):

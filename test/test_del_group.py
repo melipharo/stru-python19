@@ -1,5 +1,5 @@
 from random import randrange
-from model import GroupGenerator
+from generator import GroupGenerator
 
 
 def test_delete_some_group(app):

@@ -1,5 +1,5 @@
 from random import randrange
-from model import ContactGenerator
+from generator import ContactGenerator
 
 
 def test_edit_some_contact(app):
