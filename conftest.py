@@ -1,6 +1,7 @@
 import pytest
 from fixture import Application
 from fixture import DBFixture
+from fixture import ORMFixture
 import json
 import os.path
 import importlib
@@ -37,6 +38,7 @@ def app(request):
 @pytest.fixture(scope="session", autouse=True)
 def stop(request):
     global webfixture
+
     def fin():
         if webfixture:
             webfixture.session.ensure_logout()
@@ -46,7 +48,7 @@ def stop(request):
 
 
 @pytest.fixture(scope="session")
-def db(request):
+def db_pure(request):
     db_config = load_config(request.config.getoption("--target"))["db"]
     dbfixture = DBFixture(
         host=db_config["host"],
@@ -60,6 +62,20 @@ def db(request):
     request.addfinalizer(fin)
 
     return dbfixture
+
+
+@pytest.fixture(scope="session")
+def db(request):
+    db_config = load_config(request.config.getoption("--target"))["db"]
+    ormfixture = ORMFixture(
+        host=db_config["host"],
+        database=db_config["database"],
+        user=db_config["user"],
+        password=db_config["password"]
+    )
+
+    return ormfixture
+
 
 @pytest.fixture
 def check_ui(request):
