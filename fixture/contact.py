@@ -121,6 +121,7 @@ class ContactHelper:
         if self.contact_cache is None:
             wd = self.app.wd
             self.open_contacts_page()
+            self.show_contacts_from_all_groups()
             self.contact_cache = []
             for element in wd.find_elements_by_xpath("//table[@id='maintable']/tbody/tr")[1:]:
                 cells = element.find_elements_by_xpath("td")
@@ -192,3 +193,9 @@ class ContactHelper:
             mobile_tel=re.search("M: (.*)", content).group(1),
             work_tel=re.search("W: (.*)", content).group(1)
         )
+
+    def show_contacts_from_all_groups(self):
+        from selenium.webdriver.support.ui import Select
+        wd = self.app.wd
+        self.open_contacts_page()
+        Select(wd.find_element_by_name("group")).select_by_visible_text("[all]")

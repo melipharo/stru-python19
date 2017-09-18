@@ -20,7 +20,6 @@ class ORMFixture:
             autocommit=True
         )
         self.db.generate_mapping()
-        sql_debug(True)
 
     db = Database()
 
@@ -47,7 +46,7 @@ class ORMFixture:
         home_tel = Optional(str, column="home")
         mobile_tel = Optional(str, column="mobile")
         work_tel = Optional(str, column="work")
-        sec_tel = Optional(str, column="fax")
+        sec_tel = Optional(str, column="phone2")
         email = Optional(str, column="email")
         email2 = Optional(str, column="email2")
         email3 = Optional(str, column="email3")
