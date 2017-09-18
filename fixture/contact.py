@@ -50,11 +50,8 @@ class ContactHelper:
     def delete_first_contact(self):
         self.delete_contact_by_index(0)
 
-    def delete_contact_by_index(self, index):
+    def delete_selected_contact(self):
         wd = self.app.wd
-        self.open_contacts_page()
-        # select first contact
-        wd.find_elements_by_name("selected[]")[index].click()
         # click 'delete'
         wd.find_element_by_xpath("//div[@id='content']/form/div[@class='left']/input[@value='Delete']").click()
         # accept deletion
@@ -72,17 +69,39 @@ class ContactHelper:
             self.open_contacts_page()
         self.contact_cache = None
 
+    def select_contact_by_index(self, index):
+        self.app.wd.find_elements_by_name("selected[]")[index].click()
+
+    def select_contact_by_id(self, id):
+        self.app.wd.find_element_by_css_selector("input[value='{}']".format(id)).click()
+
+    def delete_contact_by_index(self, index):
+        self.open_contacts_page()
+        self.select_contact_by_index(index)
+        self.delete_selected_contact()
+
+    def delete_contact_by_id(self, id):
+        self.open_contacts_page()
+        self.select_contact_by_id(id)
+        self.delete_selected_contact()
+
     def edit_first_contact(self, contact):
         self.edit_contact_by_index(0, contact)
 
-    def edit_contact_by_index(self, index, contact):
-        wd = self.app.wd
-        self.open_contact_to_edit_by_index(index)
+    def update_contact_data(self, contact):
         self.set_contact_data(contact)
         # click 'update'
-        wd.find_element_by_name("update").click()
+        self.app.wd.find_element_by_name("update").click()
         self.return_to_home_page()
         self.contact_cache = None
+
+    def edit_contact_by_index(self, index, contact):
+        self.open_contact_to_edit_by_index(index)
+        self.update_contact_data(contact)
+
+    def edit_contact_by_id(self, id, contact):
+        self.open_contact_to_edit_by_id(id)
+        self.update_contact_data(contact)
 
     def return_to_home_page(self):
         self.app.wd.find_element_by_link_text("home page").click()
@@ -126,6 +145,18 @@ class ContactHelper:
     def open_contact_to_edit_by_index(self, index):
         self.open_contacts_page()
         self.app.wd.find_element_by_xpath("//table[@id='maintable']/tbody/tr[{}]/td[8]/a".format(index + 2)).click()
+
+    def open_contact_to_edit_by_id(self, id):
+        self.open_contacts_page()
+        links = self.app.wd.find_elements_by_xpath("//table[@id='maintable']/tbody/tr/td[8]/a")
+        for link in links:
+            href = link.get_attribute("href")
+            if re.findall("id={}".format(id), href):
+                link.click()
+                break
+        else:
+            assert False, "contact with id={} not found".format(id)
+
 
     def get_contact_info_from_edit_page(self, index):
         wd = self.app.wd

@@ -38,11 +38,11 @@ class Contact:
         self.all_emails_from_homepage = all_emails_from_homepage
 
     def __repr__(self):
-        return "{}:({} {})".format(self.id, self.firstname, self.lastname)
+        return "{}:({},{}):{}".format(self.id, self.firstname, self.lastname, self.address)
 
     def __eq__(self, other):
         def cleanup_contact_string(value):
-            return "" if value is None or value == "" else trim_spaces(value)
+            return "" if value is None else trim_spaces(value)
 
         self_fields = list(map(
             lambda x: cleanup_contact_string(x),

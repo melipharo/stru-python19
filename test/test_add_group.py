@@ -1,10 +1,13 @@
-# -*- coding: utf-8 -*-
 
-def test_add_group(app, json_groups):
+def test_add_group(app, db, check_ui, json_groups):
     group = json_groups
-    old_groups = app.group.get_group_list()
+
+    old_groups = db.get_group_list()
     app.group.create(group)
-    assert len(old_groups) + 1 == app.group.count()
-    new_groups = app.group.get_group_list()
     old_groups.append(group)
+
+    new_groups = db.get_group_list()
     assert sorted(old_groups) == sorted(new_groups)
+
+    if check_ui:
+        assert sorted(new_groups) == sorted(app.group.get_group_list())

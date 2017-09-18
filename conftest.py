@@ -1,40 +1,69 @@
 import pytest
 from fixture import Application
+from fixture import DBFixture
 import json
 import os.path
 import importlib
 import jsonpickle
 
-fixture = None
+webfixture = None
 target = None
+
+
+def load_config(file):
+    global target
+    if target is None:
+        with open(file) as targetfile:
+            target = json.load(targetfile)
+    return target
+
 
 @pytest.fixture
 def app(request):
-    global fixture
-    global target
+    global webfixture
     browser = request.config.getoption("--browser")
-    if target is None:
-        with open(request.config.getoption("--target")) as targetfile:
-            target = json.load(targetfile)
+    web_config = load_config(request.config.getoption("--target"))["web"]
 
-    if fixture is None or not fixture.is_valid():
-        fixture = Application(browser=browser, base_url=target["baseUrl"])
+    if webfixture is None or not webfixture.is_valid():
+        webfixture = Application(browser=browser, base_url=web_config["baseUrl"])
 
-    fixture.session.ensure_login(
-        username=target["username"],
-        password=target["password"]
+    webfixture.session.ensure_login(
+        username=web_config["username"],
+        password=web_config["password"]
     )
-    return fixture
+    return webfixture
 
 
 @pytest.fixture(scope="session", autouse=True)
 def stop(request):
-    global fixture
+    global webfixture
     def fin():
-        fixture.session.ensure_logout()
-        fixture.destroy()
+        if webfixture:
+            webfixture.session.ensure_logout()
+            webfixture.destroy()
     request.addfinalizer(fin)
-    return fixture
+    return webfixture
+
+
+@pytest.fixture(scope="session")
+def db(request):
+    db_config = load_config(request.config.getoption("--target"))["db"]
+    dbfixture = DBFixture(
+        host=db_config["host"],
+        database=db_config["database"],
+        user=db_config["user"],
+        password=db_config["password"]
+    )
+
+    def fin():
+        dbfixture.destroy()
+    request.addfinalizer(fin)
+
+    return dbfixture
+
+@pytest.fixture
+def check_ui(request):
+    return request.config.getoption("--check_ui")
 
 
 def pytest_addoption(parser):
@@ -44,6 +73,7 @@ def pytest_addoption(parser):
         action="store",
         default=os.path.join(os.path.dirname(os.path.abspath(__file__)), "target.json")
     )
+    parser.addoption("--check_ui", action="store_true")
 
 
 def pytest_generate_tests(metafunc):
