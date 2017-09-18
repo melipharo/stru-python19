@@ -4,7 +4,6 @@ from generator import ContactGenerator
 
 def test_edit_some_contact(app, db, check_ui):
     old_contacts = db.get_contact_list()
-
     if len(old_contacts) == 0:
         app.contact.create(ContactGenerator().get_contact())
         old_contacts = db.get_contact_list()

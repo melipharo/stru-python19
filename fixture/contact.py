@@ -3,7 +3,9 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import StaleElementReferenceException
+from selenium.webdriver.support.ui import Select
 from model import Contact
+from model import Group
 
 
 class ContactHelper:
@@ -194,8 +196,27 @@ class ContactHelper:
             work_tel=re.search("W: (.*)", content).group(1)
         )
 
-    def show_contacts_from_all_groups(self):
-        from selenium.webdriver.support.ui import Select
-        wd = self.app.wd
+    def show_contacts_from_group(self, group):
         self.open_contacts_page()
-        Select(wd.find_element_by_name("group")).select_by_visible_text("[all]")
+        Select(self.app.wd.find_element_by_name("group")).select_by_visible_text(group.name)
+
+    def show_contacts_from_all_groups(self):
+        self.show_contacts_from_group(Group(name="[all]"))
+
+    def add_contact_to_group(self, contact, group):
+        self.open_contacts_page()
+        self.show_contacts_from_all_groups()
+        self.select_contact_by_id(contact.id)
+        self.add_selected_contact_to_group(group)
+
+    def add_selected_contact_to_group(self, group):
+        wd = self.app.wd
+        Select(wd.find_element_by_name("to_group")).select_by_visible_text(group.name)
+        wd.find_element_by_name("add").click()
+
+    def del_contact_from_group(self, contact, group):
+        self.open_contacts_page()
+        self.show_contacts_from_group(group)
+        self.select_contact_by_id(contact.id)
+        # click 'remove from group'
+        self.app.wd.find_element_by_name("remove").click()
