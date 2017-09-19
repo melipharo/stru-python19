@@ -12,7 +12,7 @@ def test_add_contact_to_group(app, db):
     contacts_not_in_group = db.get_contacts_not_in_group(group)
 
     if len(db.get_contact_list()) == 0 or len(contacts_not_in_group) == 0:
-        app.contact.create_contact(ContactGenerator().get_contact())
+        app.contact.create(ContactGenerator().get_contact())
         contacts_not_in_group = db.get_contacts_not_in_group(group)
 
     contact = random.choice(contacts_not_in_group)
