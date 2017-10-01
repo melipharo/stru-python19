@@ -7,7 +7,8 @@ def test_add_contact_to_group(app, db):
         app.group.create(GroupGenerator().get_group())
         groups = db.get_group_list()
 
-    group = random.choice(groups)
+    # use only the groups with non-empty name
+    group = random.choice(list(filter(lambda x: x.name != "", groups)))
     contacts_in_group = db.get_contacts_in_group(group)
     contacts_not_in_group = db.get_contacts_not_in_group(group)
 
