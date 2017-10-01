@@ -196,12 +196,13 @@ class ContactHelper:
             work_tel=re.search("W: (.*)", content).group(1)
         )
 
-    def show_contacts_from_group(self, group):
+    def show_contacts_from_group_by_id(self, group_id):
         self.open_contacts_page()
-        Select(self.app.wd.find_element_by_name("group")).select_by_visible_text(group.name)
+        Select(self.app.wd.find_element_by_name("group")).select_by_value(group_id)
 
     def show_contacts_from_all_groups(self):
-        self.show_contacts_from_group(Group(name="[all]"))
+        self.open_contacts_page()
+        Select(self.app.wd.find_element_by_name("group")).select_by_visible_text("[all]")
 
     def add_contact_to_group(self, contact, group):
         self.open_contacts_page()
@@ -211,12 +212,12 @@ class ContactHelper:
 
     def add_selected_contact_to_group(self, group):
         wd = self.app.wd
-        Select(wd.find_element_by_name("to_group")).select_by_visible_text(group.name)
+        Select(wd.find_element_by_name("to_group")).select_by_value(group.id)
         wd.find_element_by_name("add").click()
 
     def del_contact_from_group(self, contact, group):
         self.open_contacts_page()
-        self.show_contacts_from_group(group)
+        self.show_contacts_from_group_by_id(group.id)
         self.select_contact_by_id(contact.id)
         # click 'remove from group'
         self.app.wd.find_element_by_name("remove").click()
