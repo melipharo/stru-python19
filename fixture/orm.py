@@ -64,6 +64,7 @@ class ORMFixture:
 
     @db_session
     def get_group_list(self):
+        self.db.commit()
         return self.convert_groups_to_model(select(g for g in ORMFixture.ORMGroup))
 
     @staticmethod
@@ -78,6 +79,7 @@ class ORMFixture:
 
     @db_session
     def get_contact_list(self):
+        self.db.commit()
         return self.convert_contacts_to_model(
             select(c for c in ORMFixture.ORMContact if c.deprecated is None)
         )
@@ -105,15 +107,18 @@ class ORMFixture:
 
     @db_session
     def get_contact_group(self, group):
+        self.db.commit()
         return list(select(g for g in ORMFixture.ORMGroup if g.id == group.id))[0]
 
     @db_session
     def get_contacts_in_group(self, group):
+        self.db.commit()
         orm_group = self.get_contact_group(group)
         return self.convert_contacts_to_model(filter(lambda x: x.deprecated is None, orm_group.contacts))
 
     @db_session
     def get_contacts_not_in_group(self, group):
+        self.db.commit()
         orm_group = self.get_contact_group(group)
         contacts = select(
             c for c in ORMFixture.ORMContact
